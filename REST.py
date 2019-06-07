@@ -9,8 +9,10 @@ from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
 from Constantes import stringConexion
 from CRUD import Crud
+from CRUDAlquemy import CrudAlchemy
 from functools import wraps
 from pythonFirebase import FirebaseUI
+from SOAPClient import Client
 
 #Configuraciones
 app = Flask(__name__)
@@ -79,8 +81,9 @@ def getMenu():
                     "  inner join EasySeguridad..Transacciones t (nolock)"
                     " on a.Transaccion=t.Transaccion where a.NombreCorto='"+_user+"' and "
                    "t.Aplicacion = '"+_app+"' order by t.Modulo asc"
-             )
+            )
     return _command.select_to_Json(_query)
+
 @app.route('/signature', methods=['POST'])
 @token_required
 def getSignature():
@@ -90,8 +93,6 @@ def getSignature():
     _query = ("select * from CashVTCOnline..View_SolicitudUsuariosTarjetas where CodigoUsuario = '"+_user+"'")
     return _command.select_to_Json(_query)
 
-
-
 #Consultas
 @app.route('/voucherHeaders', methods=['POST'])
 @token_required
@@ -99,11 +100,17 @@ def voucherHeaders():
     _command = Crud(stringConexion)
     _query = ("select REPLACE(COLUMN_NAME,'_',' ') as COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='CCCF_Detalle_Electronico_old_DataP'")
     return _command.select_to_Json(_query)
+
 @app.route('/voucher', methods=['POST'])
 @token_required
 def voucher():
-    _command = Crud(stringConexion)
-    _query = ("select top 50 * from CashVTCOnLine..CCCF_Detalle_Electronico_old_DataP (nolock)")
+    _command = CrudAlchemy(stringConexion)
+    _query = ("select top 50 "
+    " Id_Voucher, Numero_Voucher, Tarjeta, TarjetaNoEditada, Nombre_Titular_Tarjeta, Fecha_Expira_Tarjeta, Fecha_Venta, "
+    " Tipo_Credito, Plazo, Autorizacion, Valor_Consumo, Interes, IVA, ValorVenta, OtrosImpuestos, Moneda,Comision, Nombre_Agente, "
+    " Codigo_Financiadora, EstadoCabecera, Ruta, TipoConvenio, TipoCCCF "
+    "from CashVTCOnLine..CCCF_Detalle_Electronico_old_DataP (nolock)"
+    )
     return _command.select_to_Json(_query)
 
 
@@ -136,14 +143,14 @@ def login():
             logging.error('Failed : '+ str(e))
         return make_response('Something went wrong!', 403, {'WWW-Authenticate' : 'Basic realm="Login Required"'}) 
 
-        
-@app.route('/token', methods=['GET'])
-@token_required
-def token():
-    return 'Hola mundo'
 @app.route('/fire', methods=['GET'])
 def fire():
     return FirebaseUI.getData()
+
+@app.route('/BuscarVoucher', methods=['GET'])
+def SOAP():
+    _soapClient = Client()
+    return jsonify(_soapClient.BuscarVoucher())
 
 if __name__ == '__main__':
     app.debug=True

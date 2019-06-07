@@ -1,6 +1,7 @@
 import pyodbc
 import json
 import datetime
+import logging
 
 class Crud:
 
@@ -12,11 +13,16 @@ class Crud:
         cursor = conn.cursor()
         query = (_query)
         cursor.execute(query)
-        items = []
-        columns = cursor.description
-        result = [{columns[index][0]: column for index, column in enumerate(value)} for value in cursor.fetchall()]
+        row_headers=[x[0] for x in cursor.description]
+        rv = cursor.fetchall()
+        logging.warning(rv)
+        json_data=[]
+        for result in rv:
+            json_data.append(dict(zip(row_headers,result)))
         conn.close()
-        return json.dumps(result, default=myconverter)
+        _json = json.dumps(json_data, default=myconverter)
+        
+        return _json
 
     def select(self, _query):
         conn = pyodbc.connect(self._stringConection)
@@ -29,4 +35,6 @@ class Crud:
 
 def myconverter(o):
     if isinstance(o, datetime.datetime):
+        return o.__str__()
+    if isinstance(0, float):
         return o.__str__()

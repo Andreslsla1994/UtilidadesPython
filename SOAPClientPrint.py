@@ -13,9 +13,15 @@ def myconverter(o):
 
 wsdl = 'http://localhost/WS_VTCOnline/?wsdl'
 client = zeep.Client(wsdl=wsdl)
-response = client.service.BuscarVoucher('20190530', '20190606', '79500481', 'TODOS', 'andresL','andresL')
-print(response._value_1)
-input_dict = zeep.helpers.serialize_object(response._value_1)
+#response = client.service.BuscarVoucher('20190530', '20190606', '79500481', 'TODOS', 'andresL','andresL')
+response = client.service.ObtenerUsuarios('andresL')
+_key = list(response._value_1._value_1[0].keys())[0]
+_jsonResult = []
+for item in response._value_1._value_1:
+    _jsonResult.append(item[_key])
+
+print(_jsonResult)
+input_dict = zeep.helpers.serialize_object(_jsonResult)
 _json = json.loads(json.dumps(input_dict, default=myconverter))
 #_json = json.loads(json.dumps(response._value_1._value_1, default=myconverter))
 #_json = json.dumps(response._value_1, default=str)

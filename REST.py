@@ -72,7 +72,6 @@ def getAgencias():
 def getMenu():
     _command = Crud(stringConexion)
     _user = request.args.get('user')
-    logging.warning(_user)
     _app = 'IAA'
     _query = ("select t.Modulo, "
                  "CONCAT('/Mantenimiento/', REPLACE(t.Descripcion, ' ', '')) as Path, "
@@ -85,7 +84,7 @@ def getMenu():
     return _command.select_to_Json(_query)
 
 @app.route('/signature', methods=['POST'])
-@token_required
+#@token_required
 def getSignature():
     _user = request.args.get('user')
     logging.warning(_user)
@@ -95,14 +94,14 @@ def getSignature():
 
 #Consultas
 @app.route('/voucherHeaders', methods=['POST'])
-@token_required
+#@token_required
 def voucherHeaders():
     _command = Crud(stringConexion)
     _query = ("select REPLACE(COLUMN_NAME,'_',' ') as COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='CCCF_Detalle_Electronico_old_DataP'")
     return _command.select_to_Json(_query)
 
 @app.route('/voucher', methods=['POST'])
-@token_required
+#@token_required
 def voucher():
     _command = CrudAlchemy(stringConexion)
     _query = ("select top 50 "
@@ -148,9 +147,28 @@ def fire():
     return FirebaseUI.getData()
 
 @app.route('/BuscarVoucher', methods=['GET'])
-def SOAP():
+def BuscarVoucher():
+    _desde = request.args.get('desde')
+    _hasta = request.args.get('hasta')
+    _agencia = request.args.get('agencia')
+    _estado = request.args.get('estado')
+    _usuario = request.args.get('usuario')
     _soapClient = Client()
     return jsonify(_soapClient.BuscarVoucher())
+
+@app.route('/ObtenerAgencias', methods=['POST'])
+#@token_required
+def ObtenerAgencias():
+    _usuario = request.args.get('user')
+    _soapClient = Client()
+    return jsonify(_soapClient.ObtenerAgencias(_usuario))
+
+@app.route('/ObtenerUsuarios', methods=['POST'])
+#@token_required
+def ObtenerUsuarios():
+    _usuario = request.args.get('user')
+    _soapClient = Client()
+    return jsonify(_soapClient.ObtenerUsuarios(_usuario))
 
 if __name__ == '__main__':
     app.debug=True

@@ -104,11 +104,64 @@ def voucherHeaders():
 #@token_required
 def voucher():
     _command = CrudAlchemy(stringConexion)
-    _query = ("select top 50 "
+    _query = ("select top 15 "
     " Id_Voucher, Numero_Voucher, Tarjeta, TarjetaNoEditada, Nombre_Titular_Tarjeta, Fecha_Expira_Tarjeta, Fecha_Venta, "
     " Tipo_Credito, Plazo, Autorizacion, Valor_Consumo, Interes, IVA, ValorVenta, OtrosImpuestos, Moneda,Comision, Nombre_Agente, "
     " Codigo_Financiadora, EstadoCabecera, Ruta, TipoConvenio, TipoCCCF "
     "from CashVTCOnLine..CCCF_Detalle_Electronico_old_DataP (nolock)"
+    )
+    return _command.select_to_Json(_query)
+
+@app.route('/voucherTest', methods=['POST'])
+#@token_required
+def voucherTest():
+    _command = CrudAlchemy(stringConexion)
+    _query = ("select top 5 "
+    " Id_Voucher as Codigo, "
+    " Nombre_Titular_Tarjeta as Nombres, "
+	" Usuario as Apellidos, "
+	" Tarjeta as Cedula, "
+	" 1 as Provincia, "
+	" Fecha_Venta as FechaNacimiento, "
+	" TipoCCCF as Email, "
+	" Fecha_Emision as FechaIngreso, "
+	" Codigo_Ruta as Cargo, "
+	" TarjetaNoEditada as Departamento, "
+	" 2 as ProvinciaLaboral, "
+	" Valor_Consumo as Sueldo, "
+	" IVA as SueldoOriginal, "
+	" 'true' as JornadaParcial, "
+	" '' as ObservacionesPersonales, "
+	" '' as ObservacionesLaborales "
+    " from CashVTCOnLine..CCCF_Detalle_Electronico_old_DataP (nolock)"
+    )
+    return _command.select_to_Json(_query)
+
+@app.route('/voucherBuscar', methods=['POST'])
+#@token_required
+def voucherBuscar():
+    _codigo = request.args.get('codigo')
+    _usuario = request.args.get('usuario')
+    _command = CrudAlchemy(stringConexion)
+    _query = ("select top 15 "
+    " Id_Voucher as Codigo, "
+    " Nombre_Titular_Tarjeta as Nombres, "
+	" Usuario as Apellidos, "
+	" Tarjeta as Cedula, "
+	" 1 as Provincia, "
+	" Fecha_Venta as FechaNacimiento, "
+	" TipoCCCF as Email, "
+	" Fecha_Emision as FechaIngreso, "
+	" Codigo_Ruta as Cargo, "
+	" TarjetaNoEditada as Departamento, "
+	" 2 as ProvinciaLaboral, "
+	" Valor_Consumo as Sueldo, "
+	" IVA as SueldoOriginal, "
+	" 'true' as JornadaParcial, "
+	" '' as ObservacionesPersonales, "
+	" '' as ObservacionesLaborales "
+    " from CashVTCOnLine..CCCF_Detalle_Electronico_old_DataP (nolock)"
+    " where Id_Voucher= "+_codigo + " or Usuario='"+_usuario+ "'"
     )
     return _command.select_to_Json(_query)
 

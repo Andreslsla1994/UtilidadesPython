@@ -1,0 +1,16 @@
+
+server="10.0.2.56"
+database="CashVTCOnLine"
+username="sa"
+password="E@sysoft"
+client_id="1764119c-9efd-4784-a7a0-ab29f9ec045f"
+client_secret="0NhgMOuSe6RDFJHLrRzyjhNTM0XomyVhgdWDHSDRPPs="
+stringConexion = ("Driver={ODBC Driver 17 for SQL Server};"
+                    "Server="+server+";"
+                    "Database="+database+";"
+                    "UID="+username+";"
+                    "PWD="+password+";"
+                    "ColumnEncryption=Enabled;"
+                    "KeyStoreAuthentication=KeyVaultClientSecret;"
+                    "KeyStorePrincipalId="+client_id+";"
+                    "KeyStoreSecret="+client_secret+";")
